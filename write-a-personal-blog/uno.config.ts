@@ -1,3 +1,4 @@
+import { options } from 'marked'
 import {
   defineConfig,  // 用于定义 UnoCSS 配置
   presetAttributify,  // 属性化类名预设
@@ -13,6 +14,10 @@ export default defineConfig({
   shortcuts: [
     // 用于定义自定义的快捷方式，简化类名
     // 例如: 'btn': 'px-4 py-2 bg-blue-500 text-white rounded-lg'
+    {
+      'opt': 'text-emerald-900 no-underline p-2 rounded hover:text-pink-500 bg-green-500 active:text-amber-600' ,
+      'opted':'font-bold b-3 !text-pink-500'
+    }
   ],
   theme: {
     colors: {
@@ -36,4 +41,3 @@ export default defineConfig({
     transformerVariantGroup(),  // 处理变体组（如 `hover`、`focus` 等）
   ],
 })
-  
