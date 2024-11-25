@@ -11,9 +11,12 @@
   },
   "dependencies": {
     "@unocss/nuxt": "^0.64.1",
+    "marked": "^15.0.2",
+    "mongodb": "^6.11.0",
     "nuxt": "^3.14.1592",
     "unocss": "^0.64.1",
     "vue": "latest",
-    "vue-router": "latest"
+    "vue-router": "latest",
+    "vue3-markdown-it": "^1.0.10"
   }
 }
