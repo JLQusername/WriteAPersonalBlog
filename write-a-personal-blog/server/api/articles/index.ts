@@ -17,8 +17,8 @@ export default defineEventHandler(async (event) => {
             title: body.title,
             content: body.content,
             categories: body.categories,
-            created_at: new Date(), //ISO 8601 前端还需要进行格式转换并改成北京时间
-            updated_at: new Date()
+            created_at: new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }), 
+            updated_at: new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })
         }
         await articlesCollection.insertOne(article);
         return {

@@ -5,7 +5,7 @@ export interface Article {
     title: string;
     content: string;
     categories: string[];
-    created_at: Date;
-    updated_at: Date;
+    created_at: string;
+    updated_at: string;
 }
   
