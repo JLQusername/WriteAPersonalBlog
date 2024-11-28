@@ -1,6 +1,6 @@
 <template>
-  <nav class="bg-gradient-to-r from-green-400 via-cyan-500 to-sky-600 p-1 rounded p-3 flex justify-between items-center">
-    <span class="text-6 text-rose-700 font-bold italic ml-5">花果茶的个人博客</span>
+  <nav class="bg-gradient-to-r from-green-400 via-cyan-500 to-sky-600 p-4 flex justify-between items-center">
+    <span class="text-6 c-sky-900 font-bold italic ml-5">花果茶的个人博客</span>
     <div class=" flex items-center">
       <router-link to="/" 
       :class="{ 'opted ': $route.path === '/'}"

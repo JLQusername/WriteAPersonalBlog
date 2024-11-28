@@ -1,19 +1,26 @@
 <template>
-  <div class="flex justify-between">
-    <div bg-bluegray-200 px-4 py-2 w-5xl ml-50 my-3>
-        <div v-for="article in articles" :key="article._id" class="bg-bluegray-400 my-2 p-2 rounded">
-        <p text-xl m-1>{{article.title}}</p>
-        <p text-sm m-1>{{article.categories.join(' / ')}}</p>
-        <p text-sm m-1>{{article.updated_at}}</p>
+  <div class="bg-[url('/images/300.jpg')] h-screen w-screen ">
+    <div class="flex justify-between">
+      <div class="bg-gray-100 px-4 pt-3 w-5xl ml-50 mt-6 rounded shadow-md" >
+          <div v-for="article in articles" :key="article._id" 
+          class="bg-bluegray-300 mt-4 mb-1 p-2 rounded-xl b-4.5 border-gray-100 
+           hover:border-lime-700 hover:p-4 hover:mb-2 hover:bg-sky-100">
+            <p class="text-xl m-2 font-800">{{article.title}}</p>
+            <p class="text-sm my-1 mx-2.2">{{article.categories.join(' / ')}}</p>
+            <p class="text-sm my-1 mx-2.2 italic c-gray-600">{{article.updated_at}}</p>
+          </div>
+      </div>
+      <div class="bg-bluegray-200 px-4 pt-2 pb-3 mr-45 b-5 border-pink-300 mt-12 mb-2 rounded shadow-md">
+          <p class="text-xl m-3 font-700 flex justify-center c-orange-600">分类</p>
+          <div v-for="(categorie, index) in categories" :key="index" >
+            <div class="text-lg py-2.6 px-4 bg-sky-200 mx-2 my-3.5 c-rose font-600 rounded
+            hover:border-lime-700 hover:p-4 hover:bg-green-300 hover:my-3">
+              {{categorie}}
+            </div>
+          </div>
+      </div>  
     </div>
-    </div>
-    <div class="bg-bluegray-300 m-3 px-4 py-2 mr-45 b-3">
-        <div v-for="(categorie, index) in categories" :key="index" >
-          <p text-lg m-1>{{categorie}}</p>
-        </div>
-    </div>  
   </div>
-  
 </template>
 
 <script setup lang="ts">
@@ -29,7 +36,7 @@ const categories = ref<string[]>([])
 
 onMounted(async () => {
     const res = await $fetch('/api/articles') as { data: ArticleData[] };
-    articles.value = res.data;
+    articles.value = res.data.sort((a,b) => a.updated_at < b.updated_at ? 1 : -1);
     categories.value = [...new Set(res.data.flatMap(article => article.categories))]
 })
 
