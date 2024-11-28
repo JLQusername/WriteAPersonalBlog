@@ -5,18 +5,22 @@
           <div v-for="article in articles" :key="article._id" 
           class="bg-bluegray-300 mt-4 mb-1 p-2 rounded-xl b-4.5 border-gray-100 
            hover:border-lime-700 hover:p-4 hover:mb-2 hover:bg-sky-100">
+           <router-link :to="'/articles/id/'+article._id">
             <p class="text-xl m-2 font-800">{{article.title}}</p>
             <p class="text-sm my-1 mx-2.2">{{article.categories.join(' / ')}}</p>
             <p class="text-sm my-1 mx-2.2 italic c-gray-600">{{article.updated_at}}</p>
+           </router-link>
           </div>
       </div>
       <div class="bg-bluegray-200 px-4 pt-2 pb-3 mr-45 b-5 border-pink-300 mt-12 mb-2 rounded shadow-md">
           <p class="text-xl m-3 font-700 flex justify-center c-orange-600">分类</p>
-          <div v-for="(categorie, index) in categories" :key="index" >
-            <div class="text-lg py-2.6 px-4 bg-sky-200 mx-2 my-3.5 c-rose font-600 rounded
-            hover:border-lime-700 hover:p-4 hover:bg-green-300 hover:my-3">
-              {{categorie}}
-            </div>
+          <div v-for="(category, index) in categories" :key="index" >
+            <router-link :to="'/articles/category/'+ category">
+              <div class="text-lg py-2.6 px-4 bg-sky-200 mx-2 my-3.5 c-rose font-600 rounded
+              hover:border-lime-700 hover:p-4 hover:bg-green-300 hover:my-3">
+                {{category}}
+              </div>
+            </router-link>
           </div>
       </div>  
     </div>
