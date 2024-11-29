@@ -1,15 +1,17 @@
 <template>
-  <div>
-    <!-- 显示加载中的内容 -->
-    <p v-if="!article">加载中...</p>
-    <!-- 显示文章的标题和内容 -->
-    <h1 v-if="article">{{ article.title }}</h1>
-    <p v-if="article">{{ article.content }}</p>
+  <div class="bg-[url('/images/300.jpg')] h-screen w-screen">
+    <div class="flex justify-between">
+      <div class="bg-gray-100 px-5 pt-4 w-5xl ml-50 mt-6 rounded shadow-md">
+        <h1 v-if="article" class="flex justify-center">{{ article.title }}</h1>
+        <div v-html="renderedMarkdown" class="prose"></div>
+      </div>
+      <Categories />
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-// 文章数据类型定义
+import MarkdownIt from 'markdown-it';
 interface ArticleData {
   _id: string;
   title: string;
@@ -18,22 +20,18 @@ interface ArticleData {
   created_at: string;
   updated_at: string;
 }
-
-// 响应式变量，用来存储文章数据
 const article = ref<ArticleData | null>(null)
-
-const route = useRoute()  // 获取路由对象
-
+const route = useRoute() 
 onMounted(async () => {
-  const id = route.params.id as string;  // 获取动态路由参数 id
-  try {
-    // 请求文章数据
-    const res = await $fetch(`/api/articles/id/${id}`) as { data: ArticleData };
-    article.value = res.data;  // 将获取到的文章数据存入响应式变量
-  } catch (error) {
-    console.error('加载文章失败', error);
-  }
+  const id = route.params.id as string;
+  const res = await $fetch(`/api/articles/id/${id}`) as { data: ArticleData };
+  article.value = res.data; 
 })
+const md = new MarkdownIt();
+const renderedMarkdown = computed(() => renderMarkdown(article.value ? article.value.content : ''));
+function renderMarkdown(markdown: string) {
+  return md.render(markdown);
+}
 </script>
 
 <style scoped>

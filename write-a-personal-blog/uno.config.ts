@@ -40,4 +40,8 @@ export default defineConfig({
     transformerDirectives(),  // 处理 CSS 指令（如 `@apply`、`@layer` 等）
     transformerVariantGroup(),  // 处理变体组（如 `hover`、`focus` 等）
   ],
+  rules: [
+    // 自定义规则，允许在 UnoCSS 中定义自己的样式规则
+    
+  ],
 })
