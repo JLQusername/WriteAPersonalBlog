@@ -22,12 +22,24 @@
           </div>
         </div>
         <div class="flex justify-end">
-          <button v-if="isEditing" p-3 m-5 bg-sky-500 rounded-md c-white font-540 hover:p-3.7 hover:m-4.3 @click="updateArticle">{{ "保存" }}</button>
-          <button p-3 m-5 bg-emerald-600 rounded-md c-white font-540 hover:p-3.7 hover:m-4.3 @click="editArticle">{{ isEditing ? "取消" : "编辑" }}</button>
-          <button p-3 m-5 bg-rose-600 rounded-md c-white font-540 hover:p-3.7 hover:m-4.3 @click="deleteArticle">删除</button>
+          <button v-if="isEditing" class="p-3 m-5 bg-sky-500 rounded-md c-white font-540 hover:p-3.7 hover:m-4.3" @click="updateArticle">{{ "保存" }}</button>
+          <button class="p-3 m-5 bg-emerald-600 rounded-md c-white font-540 hover:p-3.7 hover:m-4.3" @click="editArticle">{{ isEditing ? "取消" : "编辑" }}</button>
+          <button class="p-3 m-5 bg-rose-600 rounded-md c-white font-540 hover:p-3.7 hover:m-4.3" @click="isWillDelete=true;isModalOpen=true;">删除</button>
         </div>
       </div>
-      <Categories />
+      <Categories v-if="fresh"/>
+    </div>
+    <div v-if="isModalOpen" class="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+      <div class="px-2 py-1.5 rounded-xl c-black bg-green-600 ">
+        <div class="px-20 py-6.5 rounded-lg bg-pink-100">
+        请输入密码
+        <input v-model="password" type="password" class="b-2 b-gray-300 rounded-md p-2 my-5 w-100">
+        <div class="flex justify-end">
+          <button @click="submit" class="bg-sky-500 c-white rounded-md p-2 mx-6 my-1 hover:p-3 hover:mx-5 hover:my-0">确定</button>
+          <button @click="isModalOpen=false;isWillDelete=false;isWillEdit=false;" class="bg-gray-400 c-white rounded-md p-2 my-1 mx-1 hover:p-3 hover:mx-0 hover:my-0">取消</button>
+        </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -59,9 +71,35 @@ function renderMarkdown(markdown: string) {
   return DOMPurify.sanitize(rawHtml);
 }
 const isEditing = ref(false);
+const isModalOpen = ref(false);
+const isWillEdit = ref(false);
+const isWillDelete = ref(false);
 function editArticle() {
-  isEditing.value = !isEditing.value;
-  // 在这里处理更新文章的逻辑
+  if(isEditing.value){
+    isEditing.value = false;
+    isWillEdit.value = false;
+    return;
+  }
+  isWillEdit.value = true;
+  isModalOpen.value = true;
+}
+const password = ref('');
+const ans = import.meta.env.VITE_APP_PASSWORD;
+const fresh = ref(true);
+async function submit(){
+  console.log(ans)
+  if(password.value === ans){
+    isModalOpen.value = false;
+    if(isWillEdit.value){
+      isEditing.value = true;
+      isWillEdit.value = false;
+    }else if(isWillDelete.value){
+      await deleteArticle();
+      isWillDelete.value = false;
+    }
+  }else{
+    alert('密码错误')
+  }
 }
 async function updateArticle() {
   if(article.value){
@@ -70,7 +108,11 @@ async function updateArticle() {
       method: 'PUT',
       body: article.value
     })
-  }
+    fresh.value = false;
+    setTimeout(() => {
+      fresh.value = true;
+    }, 1);
+  }	
   isEditing.value = false;
 }
 async function deleteArticle() {
@@ -81,6 +123,9 @@ async function deleteArticle() {
   }
   await router.push('/articles')
 }
+
+
+
 </script>
 
 <style scoped>
