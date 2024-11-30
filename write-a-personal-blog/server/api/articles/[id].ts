@@ -1,8 +1,8 @@
 import { ObjectId } from "mongodb";
 
 export default defineEventHandler(async (event) => {
-    const method = event.node.req.method;
-    const { id } = event.context.params as Record<string, string>;
+    const { method } = event.node.req;
+    const { id } = event.context.params as {id:string};
     const db = await connectToDatabase();
     const articlesCollection = db.collection("articles");
     if(method === 'GET'){
