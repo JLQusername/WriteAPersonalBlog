@@ -11,6 +11,12 @@ export default defineEventHandler(async (event) => {
             success: true,
             data:article,
         };
+    }else if(method === 'DELETE'){
+        await articlesCollection.deleteOne({ _id: ObjectId.createFromHexString(id) });
+        return {
+            success: true,
+            data: null,
+        };
     }
     throw createError({
         statusCode: 405,

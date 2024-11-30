@@ -22,9 +22,9 @@
           </div>
         </div>
         <div class="flex justify-end">
-          <button v-if="isEditing" p-3 m-5 bg-sky-500 rounded-md c-white font-540 hover:p-3.7 hover:m-4.3 @click="keepArticle">{{ "保存" }}</button>
-          <button p-3 m-5 bg-emerald-600 rounded-md c-white font-540 hover:p-3.7 hover:m-4.3 @click="updateArticle">{{ isEditing ? "取消" : "编辑" }}</button>
-          <button p-3 m-5 bg-rose-600 rounded-md c-white font-540 hover:p-3.7 hover:m-4.3>删除</button>
+          <button v-if="isEditing" p-3 m-5 bg-sky-500 rounded-md c-white font-540 hover:p-3.7 hover:m-4.3 @click="updateArticle">{{ "保存" }}</button>
+          <button p-3 m-5 bg-emerald-600 rounded-md c-white font-540 hover:p-3.7 hover:m-4.3 @click="editArticle">{{ isEditing ? "取消" : "编辑" }}</button>
+          <button p-3 m-5 bg-rose-600 rounded-md c-white font-540 hover:p-3.7 hover:m-4.3 @click="deleteArticle">删除</button>
         </div>
       </div>
       <Categories />
@@ -44,10 +44,11 @@ interface ArticleData {
   updated_at: string;
 }
 const article = ref<ArticleData | null>(null)
-const route = useRoute() 
+const route = useRoute(); 
+const router = useRouter();
 onMounted(async () => {
   const id = route.params.id as string;
-  const res = await $fetch(`/api/articles/${id}`) as { data: ArticleData };
+  const res = await $fetch(`/api/articles/${id}`) as { data: ArticleData};
   article.value = res.data; 
 })
 const md = new MarkdownIt();
@@ -58,13 +59,27 @@ function renderMarkdown(markdown: string) {
   return DOMPurify.sanitize(rawHtml);
 }
 const isEditing = ref(false);
-function updateArticle() {
+function editArticle() {
   isEditing.value = !isEditing.value;
   // 在这里处理更新文章的逻辑
 }
-function keepArticle() {
+async function updateArticle() {
+  if(article.value){
+    article.value.updated_at = new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' });
+    const res = await $fetch(`/api/articles`, {
+      method: 'PUT',
+      body: article.value
+    })
+  }
   isEditing.value = false;
-  console.log(article.value);
+}
+async function deleteArticle() {
+  if(article.value){
+      const res = await $fetch(`/api/articles/${article.value._id}`, {
+      method: 'DELETE'
+    }) as { data: null}
+  }
+  await router.push('/articles')
 }
 </script>
 

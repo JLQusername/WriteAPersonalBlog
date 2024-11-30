@@ -1,4 +1,5 @@
 import { Article } from "~/server/models/Article";
+import { ObjectId } from "mongodb";
 
 export default defineEventHandler(async (event) => {
     const { method } = event.node.req;
@@ -33,6 +34,14 @@ export default defineEventHandler(async (event) => {
         return {
             success: true,
             data:article,
+        };
+    }else if(method === 'PUT'){
+        const body = await readBody(event);
+        body._id = ObjectId.createFromHexString(body._id);
+        await articlesCollection.updateOne({_id: body._id}, {$set: body});
+        return {
+            success: true,
+            data:body,
         };
     }
     throw createError({
