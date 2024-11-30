@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="bg-gray-100 px-4 pt-2 pb-4 w-5xl ml-50 my-6 rd-xl shadow-md" >
+    <div class="bg-gray-100 px-4 pt-2 pb-4 w-5xl ml-50 mt-23 mb-6 rd-xl shadow-md" >
           <div v-for="article in articles" :key="article._id" 
           class="bg-bluegray-300 mt-4 mb-1 p-2 rounded-xl b-4.5 border-gray-100 
            hover:border-lime-700 hover:p-4 hover:mb-2 hover:bg-sky-100">

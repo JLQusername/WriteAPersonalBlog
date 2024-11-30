@@ -17,6 +17,13 @@ export default defineEventHandler(async (event) => {
                 data:articles.filter(article => article.categories.includes(category)),
             };
         }
+        const query = urlParams.get('query');
+        if(query){
+            return {
+                success: true,
+                data:articles.filter(article => article.title.toLowerCase().includes(query.toLowerCase()) || article.categories.includes(query)),
+            };
+        }
         return {
             success: true,
             data:articles,

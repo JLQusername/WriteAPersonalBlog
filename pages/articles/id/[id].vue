@@ -1,7 +1,7 @@
 <template>
   <div class="bg-[url('/images/300.jpg')] w-screen">
-    <div class="flex justify-between ">
-      <div class="bg-gray-100 px-5 pt-4 w-5xl ml-50 mt-6 rounded shadow-md mb-150">
+    <div class="flex justify-between">
+      <div class="bg-gray-100 px-5 pt-4 w-5xl ml-50 mt-23 rounded shadow-md mb-150">
         <div v-if="article" class="">
           <p class="font-600 flex justify-center text-4xl m-4 ">{{ article.title }}</p>
           <p class="font-400 flex justify-center text-sm m-1.5 c-gray-600">文章分类：{{article.categories.join(' ')}}</p>
@@ -123,8 +123,6 @@ async function deleteArticle() {
   }
   await router.push('/articles')
 }
-
-
 
 </script>
 
