@@ -45,6 +45,7 @@ export default defineEventHandler(async (event) => {
     }else if(method === 'PUT'){
         const body = await readBody(event);
         body._id = ObjectId.createFromHexString(body._id);
+        body.updated_at = new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' });
         await articlesCollection.updateOne({_id: body._id}, {$set: body});
         return {
             success: true,

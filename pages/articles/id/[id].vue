@@ -1,14 +1,14 @@
 <template>
   <div class="bg-[url('/images/300.jpg')] w-screen">
     <div class="flex justify-between">
-      <div class="bg-gray-100 px-5 pt-4 w-5xl ml-50 mt-23 rounded shadow-md mb-150">
-        <div v-if="article" class="">
+      <div class="bg-gray-100 px-5 pt-4 w-5xl ml-50 mt-23 rounded shadow-md" :class="isPreviewing ? 'mb-170' : 'mb-100'">
+        <div v-if="article">
           <p class="font-600 flex justify-center text-4xl m-4 ">{{ article.title }}</p>
           <p class="font-400 flex justify-center text-sm m-1.5 c-gray-600">文章分类：{{article.categories.join(' ')}}</p>
           <p class="font-400 flex justify-center text-sm m-1.5 c-gray-600">创建于：{{article.created_at}}</p>
           <p class="font-400 flex justify-center text-sm m-1.5 c-gray-600">编辑时间：{{article.updated_at}}</p>
         </div>
-        <div v-if="!isEditing" v-html="renderedMarkdown" class="prose mb-5 mx-5"></div>
+        <div v-if="!isEditing || isPreviewing" v-html="renderedMarkdown" class="prose mb-5 mx-5"></div>
         <div v-else-if="article">
           请修改文章标题<input v-model="article.title" type="text" class="border-2 border-gray-300 rounded-md p-2 m-5 w-4/5">
           <div>请修改文章分类
@@ -23,6 +23,7 @@
         </div>
         <div class="flex justify-end">
           <button v-if="isEditing" class="p-3 m-5 bg-sky-500 rounded-md c-white font-540 hover:p-3.7 hover:m-4.3" @click="updateArticle">{{ "保存" }}</button>
+          <button v-if="isEditing" class="p-3 m-5 bg-gray-500 rounded-md c-white font-540 hover:p-3.7 hover:m-4.3" @click="isPreviewing = !isPreviewing">{{ isPreviewing ? "取消预览" : "预览" }}</button>
           <button class="p-3 m-5 bg-emerald-600 rounded-md c-white font-540 hover:p-3.7 hover:m-4.3" @click="editArticle">{{ isEditing ? "取消" : "编辑" }}</button>
           <button class="p-3 m-5 bg-rose-600 rounded-md c-white font-540 hover:p-3.7 hover:m-4.3" @click="isWillDelete=true;isModalOpen=true;">删除</button>
         </div>
@@ -55,13 +56,16 @@ interface ArticleData {
   created_at: string;
   updated_at: string;
 }
-const article = ref<ArticleData | null>(null)
+const article = ref<ArticleData | null>(null);
+const articleBackup = ref<ArticleData | null>(null);
 const route = useRoute(); 
 const router = useRouter();
 onMounted(async () => {
   const id = route.params.id as string;
   const res = await $fetch(`/api/articles/${id}`) as { data: ArticleData};
   article.value = res.data; 
+  articleBackup.value = { ...res.data }; 
+  articleBackup.value.categories = [...res.data.categories];
 })
 const md = new MarkdownIt();
 const renderedMarkdown = computed(() => renderMarkdown(article.value ? article.value.content : ''));
@@ -74,10 +78,16 @@ const isEditing = ref(false);
 const isModalOpen = ref(false);
 const isWillEdit = ref(false);
 const isWillDelete = ref(false);
-function editArticle() {
+const isPreviewing = ref(false);
+
+async function editArticle() {
   if(isEditing.value){
     isEditing.value = false;
     isWillEdit.value = false;
+    if(articleBackup.value){
+      article.value = { ...articleBackup.value };
+      article.value.categories = [...articleBackup.value.categories];
+    }
     return;
   }
   isWillEdit.value = true;
@@ -87,7 +97,6 @@ const password = ref('');
 const ans = import.meta.env.VITE_APP_PASSWORD;
 const fresh = ref(true);
 async function submit(){
-  console.log(ans)
   if(password.value === ans){
     isModalOpen.value = false;
     if(isWillEdit.value){
@@ -97,20 +106,21 @@ async function submit(){
       await deleteArticle();
       isWillDelete.value = false;
     }
+    isPreviewing.value = false;
   }else{
     alert('密码错误')
   }
 }
 async function updateArticle() {
   if(article.value){
-    article.value.updated_at = new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' });
     const res = await $fetch(`/api/articles`, {
       method: 'PUT',
       body: article.value
     })
-    fresh.value = false;
+    articleBackup.value = { ...article.value };
+    articleBackup.value.categories = [...article.value.categories];
     setTimeout(() => {
-      fresh.value = true;
+      fresh.value = !fresh.value;
     }, 1);
   }	
   isEditing.value = false;
